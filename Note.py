@@ -1,11 +1,14 @@
+import pygments
 import os
+
 from tkinter import *
 
 from tkinter import messagebox
 
 from tkinter.filedialog import askopenfile, asksaveasfile
 
-
+from pygments.lexers import get_lexer_for_filename
+from pygments.util import ClassNotFound
 
 def copiar():
 
@@ -39,11 +42,17 @@ def nuevo():
 
 def abrir():
 
-    documento = askopenfile(filetypes=[("Archivo de pearl","*.pl"), ("Archivo de julia","*.jl"), ("Archivo de ruby","*.rb")])
-
+    documento = askopenfile()
     editor.delete(1.0, END)
-    editor.insert(1.0, documento.read())
+    contenido = documento.read()
+    editor.insert(1.0, contenido)
 
+    try:
+        lexer = get_lexer_for_filename(documento.name)
+        detected_language = lexer.name
+        messagebox.showinfo("Detected Language", f"Este código parece estar escrito en {detected_language}.")
+    except ClassNotFound:
+        messagebox.showinfo("Detected Language", "No se pudo detectar el lenguaje con certeza.")
 def guardar():
     opciones = [("Documento de pearl", "*.pl"), ("Documento de julia", "*.jl"), ("Documento de ruby", "*.rb")]
     documento = asksaveasfile(filetypes=opciones, defaultextension=".pl")
