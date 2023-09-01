@@ -1,12 +1,25 @@
-# import pygments
 import os
 import re
 
 from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import askopenfile, asksaveasfile
+from tkinter.scrolledtext import ScrolledText  # Use ScrolledText for text with scrollbar
 from pygments.lexers import get_lexer_for_filename
 from pygments.util import ClassNotFound
+
+
+def update_line_numbers(event=None):
+    line_numbers.config(state=NORMAL)
+    line_numbers.delete(1.0, END)
+    line_count = editor.get(1.0, "end-1c").count('\n') + 1
+    for line in range(1, line_count + 1):
+        line_numbers.insert(END, f"{line}\n")
+    line_numbers.config(state=DISABLED)
+
+def scroll_text_sync(*args):
+    editor.yview(*args)
+    line_numbers.yview(*args)
 
 def copiar():
 
@@ -71,8 +84,8 @@ def abrir():
                 print("Lenguaje detectado:", detected_language)
             else:
                 mensaje = "No se pudo detectar el lenguaje con certeza."
-            # mensaje_text.insert(END, "prueba uno")   
-            mensaje_text.insert(END, mensaje) 
+            # mensaje_text.insert(END, "prueba uno")
+            mensaje_text.insert(END, mensaje)
             print("Mensaje insertado")
     except Exception as e:
         print("Error:", str(e))
@@ -168,6 +181,13 @@ if __name__ == "__main__":
 
     menubar.add_cascade(label="Ayuda", menu=ayuda)
 
+    
+
+    line_numbers = Text(ventana, width=4, undo=False, state=DISABLED)
+    line_numbers.pack(side=LEFT, fill=Y)
+
+
+    
 
 
     editor = Text(ventana, undo="true")
@@ -176,7 +196,14 @@ if __name__ == "__main__":
     mensaje_text = Text(ventana, undo=False)
     mensaje_text.pack(side=LEFT, fill=BOTH, expand=True)
 
-    ventana.title("Codigazo: Bloc de notas")
+    editor.bind("<Key>", update_line_numbers)
+    editor.bind("<Configure>", update_line_numbers)
+    editor.bind("<MouseWheel>", scroll_text_sync)
+    editor.bind("<Button-4>", scroll_text_sync)
+    editor.bind("<Button-5>", scroll_text_sync)
+    editor.config(yscrollcommand=scroll_text_sync)
+
+    ventana.title("Interprete")
     ventana.geometry("800x500")
     ventana.config(menu=menubar)
     ventana.mainloop()
