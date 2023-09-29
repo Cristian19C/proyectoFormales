@@ -1,6 +1,5 @@
 import os
 import re
-import subprocess
 
 from tkinter import *
 from tkinter import messagebox
@@ -76,9 +75,9 @@ def new():
 
 def detect_language(content):
     patterns = {
-        'julia': r'\b(julia|function|using|global|let|struct|importall|println)\b',
-        'ruby': r'\b(ruby|require|puts|def|alias|class|elsif|module)\b',
-        'perl': r'\b(perl|use|print|sub|__DATA__|__END__|rand|split|local|exec)\b'
+        'julia': r'\b(function|using|global|let|struct|importall|println)\b',
+        'ruby': r'\b(require|puts|def|alias|class|elsif|module)\b',
+        'perl': r'\b(use|print|sub|__DATA__|__END__|rand|split|local|exec)\b'
     }
 
     detected_language = None
@@ -113,7 +112,7 @@ def detect_syntax_errors_perl(code):
         return "\n".join(errors)
     else:
         return "No se encontraron errores de sintaxis"
-    
+
 
 def detect_syntax_errors_julia(code):
     # Expresión regular para buscar paréntesis desequilibrados
@@ -132,13 +131,13 @@ def detect_syntax_errors_julia(code):
         elif missing_brackets_pattern.search(line) and not line.strip().startswith('#'):
             # La línea tiene paréntesis desequilibrados y no es un comentario
             errors.append(f"Error en línea {line_number}: Corchetes desequilibrados")
-        
+
 
     if errors:
         return "\n".join(errors)
     else:
         return "No se encontraron errores de sintaxis"
-    
+
 def detect_syntax_errors_ruby(code):
     # Expresión regular para buscar paréntesis desequilibrados
     unbalanced_parentheses_pattern = re.compile(r'^[^()]*\([^()]*$')
@@ -156,13 +155,13 @@ def detect_syntax_errors_ruby(code):
         elif missing_brackets_pattern.search(line) and not line.strip().startswith('#'):
             # La línea tiene paréntesis desequilibrados y no es un comentario
             errors.append(f"Error en línea {line_number}: Corchetes desequilibrados")
-        
+
 
     if errors:
         return "\n".join(errors)
     else:
         return "No se encontraron errores de sintaxis"
-    
+
 # errores de sintaxis
 def detect_syntax_errors(code, language):
     if language == "perl":
@@ -308,7 +307,7 @@ if __name__ == "__main__":
 
     ayuda = Menu(menubar, tearoff=0)
 
-    ayuda.add_command(label="Acerca de Bloc de notas ", command=about)
+    ayuda.add_command(label="Acerca del interprete", command=about)
 
     menubar.add_cascade(label="Ayuda", menu=ayuda)
 
