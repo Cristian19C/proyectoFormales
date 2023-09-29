@@ -3,10 +3,13 @@ use warnings;
 use DateTime::TimeZone;
 
 # Nombre de la ciudad o país para obtener su diferencia con GMT
-my $ubicacion1 = "America/Bogota";  # Cambia esto a la ubicación deseada
+
+my $ubicacion1="America/Bogota";  
+
+# Cambia esto a la ubicación deseada
 
 # Solicitar al usuario que ingrese la ubicación de la segunda zona horaria
-print "Ingresa la ubicacion de la segunda zona horaria (ej. Asia/Tokyo): ";
+print"Ingresa la ubicacion de la segunda zona horaria (ej. Asia/Tokyo): ";
 my $ubicacion2 = <STDIN>;
 chomp $ubicacion2;
 
