@@ -18,23 +18,31 @@ def update_line_numbers(event=None):
     mensaje_text.delete(1.0, END + "-1c")  # Limpiamos el widget de mensajes
     messaje_paradigm = ""
     messaje_sintaxis = ""
+    mensaje_semantica = ""
     if language:
         messaje_languaje = f"Este código parece estar escrito en {language}.\n\n"
         print("Lenguaje detectado:", language)
         paradigm = detect_paradigm(language, contenido)
         sintaxis = detect_syntax_errors(contenido, language)
+        semantica = detect_semantic_errors(contenido, language)
+        # semantica = ""
         print(sintaxis)
         if paradigm:
             messaje_paradigm = f"Paradigma: Programación {paradigm} \n\n"
         else:
             messaje_paradigm = "No se pudo detectar el paradigma \n\n"
         if sintaxis:
-            messaje_sintaxis = f"{sintaxis}"
+            messaje_sintaxis = f"{sintaxis} \n\n"
         else:
-            messaje_sintaxis = "hola mundo"
+            messaje_sintaxis = "No hay errores de sintaxis \n\n"
+        if semantica:
+            mensaje_semantica = f"{semantica} \n\n"
+        else:
+            mensaje_semantica = "No hay errores de semantica"
+
     else:
         messaje_languaje = "No se pudo detectar el lenguaje con certeza."
-    mensaje_text.insert(END, messaje_languaje + messaje_paradigm + messaje_sintaxis)
+    mensaje_text.insert(END, messaje_languaje + messaje_paradigm + messaje_sintaxis+mensaje_semantica)
     mensaje_text2.insert(END, messaje_sintaxis)
 
 
@@ -75,9 +83,9 @@ def new():
 
 def detect_language(content):
     patterns = {
-        'julia': r'\b(function|using|global|let|struct|importall|println)\b',
-        'ruby': r'\b(require|puts|def|alias|class|elsif|module)\b',
-        'perl': r'\b(use|print|sub|__DATA__|__END__|rand|split|local|exec)\b'
+        'julia': r'\b(julia|function|using|global|let|struct|importall|println)\b',
+        'ruby': r'\b(ruby|require|puts|def|alias|class|elsif|module)\b',
+        'perl': r'\b(perl|use|print|sub|__DATA__|__END__|rand|split|local|exec)\b'
     }
 
     detected_language = None
@@ -112,9 +120,10 @@ def detect_syntax_errors_perl(code):
         return "\n".join(errors)
     else:
         return "No se encontraron errores de sintaxis"
-
+    
 
 def detect_syntax_errors_julia(code):
+    print("entro al metodo de julia")
     # Expresión regular para buscar paréntesis desequilibrados
     unbalanced_parentheses_pattern = re.compile(r'^[^()]*\([^()]*$')
     missing_brackets_pattern = re.compile(r'^[^\[\]]*\[[^\[\]]*$')
@@ -131,13 +140,13 @@ def detect_syntax_errors_julia(code):
         elif missing_brackets_pattern.search(line) and not line.strip().startswith('#'):
             # La línea tiene paréntesis desequilibrados y no es un comentario
             errors.append(f"Error en línea {line_number}: Corchetes desequilibrados")
-
+        
 
     if errors:
         return "\n".join(errors)
     else:
         return "No se encontraron errores de sintaxis"
-
+    
 def detect_syntax_errors_ruby(code):
     # Expresión regular para buscar paréntesis desequilibrados
     unbalanced_parentheses_pattern = re.compile(r'^[^()]*\([^()]*$')
@@ -155,13 +164,13 @@ def detect_syntax_errors_ruby(code):
         elif missing_brackets_pattern.search(line) and not line.strip().startswith('#'):
             # La línea tiene paréntesis desequilibrados y no es un comentario
             errors.append(f"Error en línea {line_number}: Corchetes desequilibrados")
-
+        
 
     if errors:
         return "\n".join(errors)
     else:
         return "No se encontraron errores de sintaxis"
-
+    
 # errores de sintaxis
 def detect_syntax_errors(code, language):
     if language == "perl":
@@ -172,6 +181,51 @@ def detect_syntax_errors(code, language):
         return detect_syntax_errors_julia(code)
     else:
         return "No hay errores de sintaxis"
+
+#errores semanticos
+
+
+
+def detect_semantic_errors(code, language):
+    semantic_errors = []
+    if language == "perl":
+    
+        # Buscar variables declaradas de manera incorrecta en el código
+        incorrectly_declared_vars = re.finditer(r'(my\s+(\w+)\s*=)', code)
+        
+        for match in incorrectly_declared_vars:
+            declaration_line = match.group(1)  # Línea de la declaración incorrecta
+            variable_name = match.group(2)  # Nombre de la variable
+            # Verificar si la declaración incluye el signo '$'
+            if '$' not in declaration_line:
+                semantic_errors.append(f"Variable '{variable_name}' declarada incorrectamente en la línea: {declaration_line}")
+            # Buscar funciones que no están definidas
+        pass
+    elif language == "julia":
+          # Buscar variables declaradas de manera incorrecta en el código de Julia
+        incorrectly_declared_vars = re.finditer(r'(^\s*(?:const\s*)?(\w+)\s*=)', code, re.MULTILINE)
+
+        for match in incorrectly_declared_vars:
+            declaration_line = match.group(1)  # Línea de la declaración incorrecta
+            variable_name = match.group(2)  # Nombre de la variable
+            # Verificar si la declaración incluye el signo '='
+            if '=' not in declaration_line:
+                semantic_errors.append(f"Variable '{variable_name}' declarada incorrectamente en la línea: {declaration_line}")
+        pass
+    elif language == "ruby":
+        incorrectly_declared_vars = re.finditer(r'(\w+)\s*=', code)
+
+        for match in incorrectly_declared_vars:
+            declaration_line = match.group(0)  # Línea de la declaración incorrecta
+            variable_name = match.group(1)  # Nombre de la variable
+            # Verificar si la declaración incluye el signo '='
+            if '=' not in declaration_line:
+                semantic_errors.append(f"Variable '{variable_name}' declarada incorrectamente en la línea: {declaration_line}")
+        pass
+    
+    return semantic_errors
+
+
 
 
 def detect_paradigm(language, content): 
@@ -307,7 +361,7 @@ if __name__ == "__main__":
 
     ayuda = Menu(menubar, tearoff=0)
 
-    ayuda.add_command(label="Acerca del interprete", command=about)
+    ayuda.add_command(label="Acerca de Bloc de notas ", command=about)
 
     menubar.add_cascade(label="Ayuda", menu=ayuda)
 
