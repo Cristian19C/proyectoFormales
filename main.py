@@ -189,17 +189,15 @@ def detect_syntax_errors(code, language):
 def detect_semantic_errors(code, language):
     semantic_errors = []
     if language == "perl":
-    
         # Buscar variables declaradas de manera incorrecta en el código
         incorrectly_declared_vars = re.finditer(r'(my\s+(\w+)\s*=)', code)
-        
         for match in incorrectly_declared_vars:
             declaration_line = match.group(1)  # Línea de la declaración incorrecta
             variable_name = match.group(2)  # Nombre de la variable
             # Verificar si la declaración incluye el signo '$'
             if '$' not in declaration_line:
                 semantic_errors.append(f"Variable '{variable_name}' declarada incorrectamente en la línea: {declaration_line}")
-            # Buscar funciones que no están definidas
+           
         pass
     elif language == "julia":
           # Buscar variables declaradas de manera incorrecta en el código de Julia
@@ -382,7 +380,7 @@ if __name__ == "__main__":
     editor.bind("<Button-5>", scroll_text_sync)
     editor.config(yscrollcommand=scroll_text_sync)
 
-    ventana.title("Interprete")
+    ventana.title("Ide para la detección de errores y el lenguaje de programación")
     ventana.geometry("880x500")
     ventana.config(menu=menubar)
     ventana.mainloop()
