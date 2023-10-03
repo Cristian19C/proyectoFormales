@@ -314,8 +314,8 @@ def save():
 
 
 def about():
-    messagebox.showinfo("Editor auto detector de lenguaje",
-                        "El editor logra detectar si se esta usando uno de tres tipos"
+    messagebox.showinfo("IDE para la detección de errores y el lenguaje de programación",
+                        "El IDE logra detectar si se esta usando uno de tres tipos"
 
                         " de lenguajes. Perl, Ruby o Julia.\n\n"
 
@@ -359,7 +359,7 @@ if __name__ == "__main__":
 
     ayuda = Menu(menubar, tearoff=0)
 
-    ayuda.add_command(label="Acerca de Bloc de notas ", command=about)
+    ayuda.add_command(label="Acerca de IDE para la detección de errores y el lenguaje de programación", command=about)
 
     menubar.add_cascade(label="Ayuda", menu=ayuda)
 
